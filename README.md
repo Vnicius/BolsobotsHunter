@@ -10,6 +10,8 @@
 
 ### Dependencies
 
+- Python 3.7
+
 - Anaconda
 
 ```sh
