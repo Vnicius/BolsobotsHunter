@@ -1,20 +1,43 @@
 import os
 import shutil
 import argparse
-from tweets_to_csv import tweets_to_csv
+from utils.tweets_to_csv import tweets_to_csv
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-q', '--query', help='Search query')
-parser.add_argument('-l', '--lang', help='Language', default='pt')
-parser.add_argument('-o', '--output', help='Output file name', default='data.csv')
-args = parser.parse_args()
+DEFAULT_LANG = 'pt'
+DEFAULT_OUTPUT = 'data.csv'
 
-os.chdir('TweetScraper')
-os.system(f'scrapy crawl TweetScraper -a query="{args.query}" -a lang="{args.lang}"')
-os.chdir('..')
+def hunt(query, lang=DEFAULT_LANG, output=DEFAULT_OUTPUT):
+    '''
+        Get all tweets from a query and save as a .csv file
 
-data_path = os.path.join('TweetScraper', 'Data', 'tweet')
+        Prams:
+            query (str): query string
+            lang (str): tweets language
+            output (str): output file name
+    '''
+    # change to TweetScraper directory
+    os.chdir('TweetScraper')
 
-tweets_to_csv(data_path, args.output)
+    # crawlling the tweets
+    os.system(f'scrapy crawl TweetScraper -a query="{query}" -a lang="{lang}"')
+    
+    # returning to the root directory
+    os.chdir('..')
 
-shutil.rmtree(data_path)
+    # creating the data path
+    data_path = os.path.join('TweetScraper', 'Data', 'tweet')
+
+    # convert the tweets directory to csv
+    tweets_to_csv(data_path, output)
+
+    # remove the original tweets directory
+    shutil.rmtree(data_path)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-q', '--query', help='Search query')
+    parser.add_argument('-l', '--lang', help='Language', default=DEFAULT_LANG)
+    parser.add_argument('-o', '--output', help='Output file name', default=DEFAULT_OUTPUT)
+    args = parser.parse_args()
+
+    hunt(args.query, args.lang, args.output)
