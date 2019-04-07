@@ -26,7 +26,7 @@ def snif(input_file, output=DEFAULT_OUTPUT):
     users_unique = users.drop_duplicates('user_id')
     
     # apply the filter to get suspecious users
-    bad_usernames = users[users['usernameTweet'].str.match(r'\w+\d{5,}')]
+    bad_usernames = users_unique[users_unique['usernameTweet'].str.match(r'\w+\d{5,}')]
 
     # save the result
     bad_usernames.to_csv(output, encoding='utf-8', index=False)
